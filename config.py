@@ -6,6 +6,7 @@ load_dotenv()
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class ProductionConfig(Config):
