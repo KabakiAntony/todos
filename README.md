@@ -2,7 +2,7 @@
 
 
 ## what is todos
-todos is a basic app for capturing things that I need to do during a given day or given time duration , it's aim albeit being a simplistic app is to showcase the understanding of REST API design principles,it will include pivotal tracker to help in project management and  Travis Ci which is going to help in the build process for continous integration and deployment. The project is going to be hosted on Heroku for the Rest API and the frontend will hosted on github pages.
+todos is a basic app for capturing things that I need to be done for a given day or given time duration , it's aim albeit being a simplistic app is to showcase the understanding of REST API design principles,it will include Travis Ci which is going to help in the build process for continous integration and deployment. The project is going to be hosted on Heroku for the Rest API and the frontend will hosted on github pages.
 
 
 ## Setup and installation
