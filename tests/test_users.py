@@ -1,5 +1,5 @@
 # holds all tests for users
-import os
+# import os
 import json
 from .todosBaseTest import TodosBaseTest
 
@@ -29,7 +29,7 @@ class TestUsers(TodosBaseTest):
         "password": "newpassword"
     }
 
-    def create_user(self, data={}):
+    def create_new_user(self, data={}):
         if not data:
             data = self.user
         response = self.client.post(
@@ -43,5 +43,5 @@ class TestUsers(TodosBaseTest):
         """
         test creation of a user in the system
         """
-        response = self.create_user()
+        response = self.create_new_user()
         self.assertEqual(response.status_code, 201)
