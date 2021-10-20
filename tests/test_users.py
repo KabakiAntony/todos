@@ -1,5 +1,3 @@
-# holds all tests for users
-# import os
 import json
 from .todosBaseTest import TodosBaseTest
 
@@ -33,7 +31,7 @@ class TestUsers(TodosBaseTest):
         if not data:
             data = self.user
         response = self.client.post(
-            '/users',
+            '/users/signup',
             data=json.dumps(self.user),
             content_type='application/json'
         )
@@ -45,3 +43,14 @@ class TestUsers(TodosBaseTest):
         """
         response = self.create_new_user()
         self.assertEqual(response.status_code, 201)
+
+    def test_user_signin(self):
+        """
+        test user sign in with correct credentials
+        """
+        response = self.client.post(
+            '/users/signin',
+            data=json.dumps(self.user),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)

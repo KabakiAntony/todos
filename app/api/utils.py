@@ -19,8 +19,8 @@ def custom_make_response(key, value, status):
     This is a custom make response to make a 
     json object that is returned by all endpoints
     :param key: this will make the key for the json object
-    it will be either 'message or error'
-    For successful actions the key will 'message' and for
+    it will be either 'data or error'
+    For successful actions the key will 'data' and for
     failures the key will be 'error'
     :param value: this will be the value for the above 'key'
     parameter
