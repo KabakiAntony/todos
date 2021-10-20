@@ -12,6 +12,6 @@ class TodosBaseTest(unittest.TestCase):
         self.client = self.app.test_client()
         db.create_all()
 
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
+    # def tearDown(self):
+    #     db.session.remove()
+    #     db.drop_all()
