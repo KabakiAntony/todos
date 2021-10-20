@@ -14,8 +14,21 @@ from app.api.models.users import Users, user_schema
 KEY = os.getenv("SECRET_KEY")
 
 
-def custom_make_response(message_or_object, status_code):
-    return make_response(jsonify(message_or_object), status_code)
+def custom_make_response(key, value, status):
+    """
+    This is a custom make response to make a 
+    json object that is returned by all endpoints
+    :param key: this will make the key for the json object
+    it will be either 'message or error'
+    For successful actions the key will 'message' and for
+    failures the key will be 'error'
+    :param value: this will be the value for the above 'key'
+    parameter
+    :param status: this will be a status code for the return
+    """
+    raw_dict = {key: value}
+    raw_dict[key] = value
+    return make_response(jsonify(raw_dict), status)
 
 
 def isValidPassword(password):
@@ -24,12 +37,7 @@ def isValidPassword(password):
     :param password: is the password that is being checked
     """
     if len(password) < 8:
-        abort(
-            custom_make_response(
-                "Password should be atleast 8 characters",
-                400,
-            )
-        )
+        abort(400, "Password should be atleast 8 characters")
 
 
 def isValidEmail(email):
@@ -39,10 +47,7 @@ def isValidEmail(email):
     """
     if not re.match(
             r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
-        # abort("Please enter a valid email addres", 400)
-        abort(
-            custom_make_response("Please enter a valid email address", 400)
-            )
+        abort(400, "Please enter a valid email address")
     return True
 
 
@@ -59,12 +64,9 @@ def check_for_whitespace(data, items_to_check):
     for key, value in data.items():
         if key in items_to_check and not value.strip():
             abort(
-                custom_make_response(
-                    "One or more of your fields is empty, please\
-                        check and try again.",
-                    400
-                )
-            )
+                400,
+                "One or more of your fields is empty,\
+                    please check and try again.")
     return True
 
 
@@ -81,7 +83,7 @@ def token_required(f):
         if 'auth_token' in request.headers:
             user_token = request.headers['auth_token']
         if not user_token:
-            return custom_make_response("Token is missing", 401)
+            return custom_make_response("error", "Token is missing", 401)
         try:
             if user_token:
                 data = jwt.decode(user_token, KEY, algorithm="HS256")
@@ -90,7 +92,7 @@ def token_required(f):
         except Exception as e:
             # exceptions go to site administrator log and email
             # the user gets a friendly error notification
-            return custom_make_response(f"Token {e}", 401)
+            return custom_make_response("error", f"Token {str(e)}", 401)
         return f(_data, *args, **kwargs)
     return decorated
 
