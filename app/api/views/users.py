@@ -32,7 +32,7 @@ def create_user():
         isValidPassword(user_data['password'])
 
         if Users.query.filter_by(email=user_data["email"]).first():
-            abort(custom_make_response('User already exists', 409))
+            abort(409, "User already exists")
 
         id = generate_id()
         new_user = Users(id=id, email=email, password=password)
@@ -41,7 +41,8 @@ def create_user():
 
         # add token creation and sending emails for account
         # activation
-        return custom_make_response("User created successfully", 201)
+        return custom_make_response(
+            "message", "User created successfully", 201)
 
     except Exception as e:
-        return abort(custom_make_response(f"{e}", 400))
+        return custom_make_response("error", f"{str(e)}", e.code)
