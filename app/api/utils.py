@@ -16,7 +16,7 @@ KEY = os.getenv("SECRET_KEY")
 
 def custom_make_response(key, value, status):
     """
-    This is a custom make response to make a 
+    This is a custom make response to make a
     json object that is returned by all endpoints
     :param key: this will make the key for the json object
     it will be either 'data or error'
