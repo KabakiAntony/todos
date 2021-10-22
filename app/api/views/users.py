@@ -5,12 +5,14 @@ from app.api import todos
 from app.api.models import db
 from flask import request, abort
 from app.api.models.users import Users, user_schema
+from werkzeug.security import generate_password_hash
 from app.api.utils import (
     check_for_whitespace,
     custom_make_response,
     isValidPassword,
     isValidEmail,
-    generate_id
+    generate_id,
+    token_required
 )
 
 # get environment variables
@@ -75,7 +77,7 @@ def user_signin():
 
         if not Users.compare_password(_password, password):
             abort(
-                401,
+                403,
                 "Email and or password is incorrect,\
                     please check and try again.")
 
@@ -91,12 +93,48 @@ def user_signin():
         response = custom_make_response(
             "data",
             {
-                "message": "Signed in successfully,\
-                    preparing your dashboard...",
+                "message":
+                "Signed in successfully preparing your dashboard...",
                 "auth_token": token.decode('utf-8'),
             }, 200
         )
         return response
 
+    except Exception as e:
+        return custom_make_response("error", f"{str(e)}", e.code)
+
+
+@todos.route('/users/update-password', methods=['PUT'])
+@token_required
+def update_password(user):
+    """
+    Update or change the user password
+    :param user: a user object will be passed on from
+    the decoded token therefore you will be able to access
+    various user attributes an id and email uniquely identifying
+    the user and therefore updating their password accoringly
+    """
+    try:
+        user_data = request.get_json()
+        email = user['email']
+        new_password = user_data['password']
+        if user['email'] != user_data['email']:
+            abort(401, "You are not authorized to carryout this action.")
+
+        check_for_whitespace(user_data, ["email", "password"])
+        isValidEmail(email)
+        isValidPassword(new_password)
+
+        Users.query.filter_by(email=user["email"]).update(
+            dict(password=f"{generate_password_hash(str(new_password))}")
+        )
+        db.session.commit()
+
+        # add email sending on successful password change.
+        return custom_make_response(
+            "data",
+            "Your password has been changed successfully.",
+            200
+        )
     except Exception as e:
         return custom_make_response("error", f"{str(e)}", e.code)
