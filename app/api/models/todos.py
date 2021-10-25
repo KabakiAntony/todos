@@ -2,7 +2,7 @@ from app.api.models import db, ma
 from datetime import datetime
 
 
-class TodosModel(db.Model):
+class Todos(db.Model):
     """
     creating the todos model
     """
@@ -13,8 +13,7 @@ class TodosModel(db.Model):
     creation_date = db.Column(db.DateTime(), default=datetime.utcnow)
     todo = db.Column(db.String(255), nullable=False)
 
-    def __init__(self, id, user_id, creation_date, todo):
-        self.id = id
+    def __init__(self, user_id, creation_date, todo):
         self.user_id = user_id
         self.creation_date = creation_date
         self.todo = todo
