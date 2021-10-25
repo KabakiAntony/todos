@@ -1,4 +1,5 @@
 import json
+from app.api.models import db
 from .todosBaseTest import TodosBaseTest
 
 
@@ -41,14 +42,25 @@ class TestUsers(TodosBaseTest):
         )
         return response
 
-    def test_user_creation(self):
+    def signin_user(self):
+        """
+        reusable user signin function
+        """
+        response = self.client.post(
+            '/users/signin',
+            data=json.dumps(self.user),
+            content_type="application/json"
+        )
+        return response
+
+    def test_a_user_creation(self):
         """
         test creation of a user in the system
         """
         response = self.create_new_user()
         self.assertEqual(response.status_code, 201)
 
-    def test_user_creation_with_empty_email_field(self):
+    def test_b_user_creation_with_empty_email_field(self):
         """
         test user creation with an empty email field
         """
@@ -59,7 +71,7 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_user_creation_with_empty_password_field(self):
+    def test_c_user_creation_with_empty_password_field(self):
         """
         test user creation with an empty password field
         """
@@ -70,7 +82,7 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_user_signin(self):
+    def test_d_user_signin(self):
         """
         test user sign in with correct credentials
         """
@@ -82,7 +94,7 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_user_signin_with_wrong_password(self):
+    def test_e_user_signin_with_wrong_password(self):
         """
         test user sign in with wrong password
         """
@@ -94,7 +106,7 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 403)
 
-    def test_user_signin_non_existent_user(self):
+    def test_f_user_signin_non_existent_user(self):
         """
         test signing in a non existent user
         """
@@ -105,7 +117,7 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_duplicate_user_creation(self):
+    def test_g_duplicate_user_creation(self):
         """
         test signing up a user twice
         """
@@ -113,7 +125,7 @@ class TestUsers(TodosBaseTest):
         response = self.create_new_user()
         self.assertEqual(response.status_code, 409)
 
-    def test_password_update(self):
+    def test_h_password_update(self):
         """
         test password update for a given user
         """
@@ -130,4 +142,8 @@ class TestUsers(TodosBaseTest):
             headers={'auth_token': auth_token},
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
+
+    def test_z_tearing_down(self):
+        db.session.remove()
+        db.drop_all()
