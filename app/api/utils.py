@@ -83,7 +83,7 @@ def token_required(f):
         if 'auth_token' in request.headers:
             user_token = request.headers['auth_token']
         if not user_token:
-            return custom_make_response("error", "Token is missing", 401)
+            return custom_make_response("error", "Token is missing", 403)
         try:
             if user_token:
                 data = jwt.decode(user_token, KEY, algorithm="HS256")
