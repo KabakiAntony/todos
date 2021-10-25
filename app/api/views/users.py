@@ -1,7 +1,7 @@
 import os
 import jwt
 import datetime
-from app.api import todos
+from app.api import users
 from app.api.models import db
 from flask import request, abort
 from app.api.models.users import Users, user_schema
@@ -19,7 +19,7 @@ from app.api.utils import (
 KEY = os.getenv("SECRET_KEY")
 
 
-@todos.route('/users/signup', methods=['POST'])
+@users.route('/users/signup', methods=['POST'])
 def create_user():
     """
     given user object (email, password)
@@ -45,13 +45,13 @@ def create_user():
         # add token creation and sending emails for account
         # activation
         return custom_make_response(
-            "message", "User created successfully", 201)
+            "data", "User created successfully", 201)
 
     except Exception as e:
         return custom_make_response("error", f"{str(e)}", e.code)
 
 
-@todos.route('/users/signin', methods=["POST"])
+@users.route('/users/signin', methods=["POST"])
 def user_signin():
     """
     Signin a user into the system.
@@ -104,7 +104,7 @@ def user_signin():
         return custom_make_response("error", f"{str(e)}", e.code)
 
 
-@todos.route('/users/update-password', methods=['PUT'])
+@users.route('/users/update-password', methods=['PUT'])
 @token_required
 def update_password(user):
     """
@@ -119,7 +119,7 @@ def update_password(user):
         email = user['email']
         new_password = user_data['password']
         if user['email'] != user_data['email']:
-            abort(401, "You are not authorized to carryout this action.")
+            abort(403, "You are not authorized to carryout this action.")
 
         check_for_whitespace(user_data, ["email", "password"])
         isValidEmail(email)
