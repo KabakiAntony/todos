@@ -58,6 +58,7 @@ class TestTodos(TodosBaseTest):
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
+        print(signin_user_response.json['data'])
         create_todo_response = self.client.post(
             '/todos',
             data=json.dumps(self.todo),
