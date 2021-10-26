@@ -65,6 +65,8 @@ class TestTodos(TodosBaseTest):
             headers={'auth_token': auth_token},
             content_type="application/json"
         )
+        print(create_todo_response.json['data'], "data from todos create")
+        print(create_todo_response.json['error'], "error from todos create")
         self.assertEqual(create_todo_response.status_code, 201)
 
     def test_b_getting_all_todos_for_a_user(self):
