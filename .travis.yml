@@ -2,7 +2,7 @@ os: linux
 dist: xenial
 language: python
 python:
-- 3.8.10
+- "3.8.10"
 install:
 - pip install -r requirements.txt
 services:
