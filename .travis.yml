@@ -8,11 +8,11 @@ install:
 services:
 - postgresql
 before_script:
-- psql -c "CREATE DATABASE rms_test_db;" -U postgres
+- psql -c "CREATE DATABASE todos_test_db;" -U postgres
 - psql -c "CREATE USER kiarie WITH PASSWORD '7194';" -U postgres
 env:
   matrix:
-  - TEST_DATABASE_URL="postgres://kiarie:7194@localhost/rms_test_db"
+  - TEST_DATABASE_URL="postgresql://kiarie:7194@localhost/todos_test_db"
   global:
     secure: jjSaoX3+i2Q4Zmf1PWBg+79mT5sSjbBed2PXxRBByU+HFkhWKcQsWNdea3RuxXQXUTSl5fpZQID6l6ahAUDGC1EOI9v4fxRtCz/RYsSeVvzdtgSedMzIxiK8+upHbRShshI1uhP2ukYkaqDokbUZPrSxXgMt2kaFZkRnCRgkgwZDV7fd9zQhdbY0Q9BCd+UwDDQmRWVqJjr+IctRcYFbnI2MKR6ewfBASOkWSH4LgWCs4SWQJXKdWxqu6d2wHVzgGnVS5mTXYznMulFnEocjLcNVk/V1y4cjoRN7x1prSNoeBn7EQVwZebCA9tIvi9zyCsRpQPl12RfjKQId+Qywet/SjhcNfg5KL6jkDcFzw+Ji4mKy+bGaU7tIT8MUhcl0V/pWWdqQk6gYLp9MsO4gBQe7TFjtoJc3DNIK+GjYnZABIEKiBh4OBPg9qCMVu+JXk3fz39JwdJxCyzW4CTgbMyH2RrujvNihNBAFXxzKv52/ktrObRIpR5Cb6KRdhpPESN/2Lm+8U277p1A6gZUGrdjv9bMURZi74iF2uJ9T7PNgaCOBltYql0jJPLKjTnTUM6UcmHrStc9ag17MJV9KfWEdeLXz7k29GmaBZGLI8/w6Mg9hiiiH+o8cCzsEfaFDZKWwaHYuBlnaQXRl5LhBi44W55sk0pXkjZ0ylD27X74=
 script:
