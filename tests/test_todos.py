@@ -17,14 +17,12 @@ class TestTodos(TodosBaseTest):
     }
     todo = {
         "todo": "finish all projects in flask.",
-        "creation_date": "22/10/2021"
     }
     updated_todo = {
         "todo": " finished all projects in flask"
     }
     todo_with_empty_body = {
         "todo": "",
-        "creation_date": "22/10/2021"
     }
 
     def signup_user(self):

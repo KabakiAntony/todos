@@ -1,4 +1,5 @@
 import os
+import datetime
 from app.api import todos
 from app.api.models import db
 from flask import request, abort
@@ -26,10 +27,11 @@ def create_todo(user):
     try:
         todo_data = request.get_json()
         todo = todo_data['todo']
-        creation_date = todo_data['creation_date']
-        creation_date = creation_date.strftime("%Y-%m-%d")
+        # creation_date = todo_data['creation_date']
+        date_created = datetime.datetime.utcnow()
+        creation_date = date_created.strftime("%Y-%m-%d")
 
-        check_for_whitespace(todo_data, ["todo", "creation_date"])
+        check_for_whitespace(todo_data, ["todo"])
 
         user_id = user['id']
 
