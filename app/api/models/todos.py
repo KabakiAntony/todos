@@ -1,5 +1,4 @@
 from app.api.models import db, ma
-from datetime import datetime
 
 
 class Todos(db.Model):
@@ -10,7 +9,7 @@ class Todos(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.String(20), db.ForeignKey("Users.id"))
-    creation_date = db.Column(db.DateTime(), default=datetime.utcnow)
+    creation_date = db.Column(db.Date())
     todo = db.Column(db.String(255), nullable=False)
 
     def __init__(self, user_id, creation_date, todo):

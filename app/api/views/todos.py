@@ -26,7 +26,7 @@ def create_todo(user):
     try:
         todo_data = request.get_json()
         todo = todo_data['todo']
-        creation_date = todo_data['creation_date']
+        creation_date = todo_data['creation_date'].strftime("%Y-%m-%d")
 
         check_for_whitespace(todo_data, ["todo", "creation_date"])
 
