@@ -76,6 +76,7 @@ class TestTodos(TodosBaseTest):
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
+        print(signin_user_response.json['error'], "error from todos create")
         get_user_todos_response = self.client.get(
             '/todos',
             headers={'auth_token': auth_token}
@@ -98,6 +99,7 @@ class TestTodos(TodosBaseTest):
             content_type="application/json"
         )
         self.assertEqual(signin_user_response.status_code, 200)
+        print(signin_user_response.json['error'], "error from todos create")
         auth_token = signin_user_response.json['data']['auth_token']
         get_user_todos_response = self.client.get(
             '/todos',
