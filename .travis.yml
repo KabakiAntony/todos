@@ -1,30 +1,22 @@
 os: linux
-
 dist: xenial
-
 language: python
-
 python:
-   - "3.8.10"
-# command to install dependencies
+- "3.8.10"
 install:
-  - pip install -r requirements.txt
-
+- pip install -r requirements.txt
 services:
-  - postgresql
-  
+- postgresql
 before_script:
-  - psql -c "CREATE DATABASE todos_test_db;" -U postgres
-  - psql -c "CREATE USER kiarie WITH PASSWORD '7194';" -U postgres
+- psql -c "CREATE DATABASE todos_test_db;" -U postgres
+- psql -c "CREATE USER kiarie WITH PASSWORD '7194';" -U postgres
 env:
+  matrix:
   - TEST_DATABASE_URL="postgresql://kiarie:7194@localhost/todos_test_db"
-  
+  global:
+    secure: jjSaoX3+i2Q4Zmf1PWBg+79mT5sSjbBed2PXxRBByU+HFkhWKcQsWNdea3RuxXQXUTSl5fpZQID6l6ahAUDGC1EOI9v4fxRtCz/RYsSeVvzdtgSedMzIxiK8+upHbRShshI1uhP2ukYkaqDokbUZPrSxXgMt2kaFZkRnCRgkgwZDV7fd9zQhdbY0Q9BCd+UwDDQmRWVqJjr+IctRcYFbnI2MKR6ewfBASOkWSH4LgWCs4SWQJXKdWxqu6d2wHVzgGnVS5mTXYznMulFnEocjLcNVk/V1y4cjoRN7x1prSNoeBn7EQVwZebCA9tIvi9zyCsRpQPl12RfjKQId+Qywet/SjhcNfg5KL6jkDcFzw+Ji4mKy+bGaU7tIT8MUhcl0V/pWWdqQk6gYLp9MsO4gBQe7TFjtoJc3DNIK+GjYnZABIEKiBh4OBPg9qCMVu+JXk3fz39JwdJxCyzW4CTgbMyH2RrujvNihNBAFXxzKv52/ktrObRIpR5Cb6KRdhpPESN/2Lm+8U277p1A6gZUGrdjv9bMURZi74iF2uJ9T7PNgaCOBltYql0jJPLKjTnTUM6UcmHrStc9ag17MJV9KfWEdeLXz7k29GmaBZGLI8/w6Mg9hiiiH+o8cCzsEfaFDZKWwaHYuBlnaQXRl5LhBi44W55sk0pXkjZ0ylD27X74=
 script:
-  - export SECRET_KEY=$SECRET_KEY
-  - python -m pytest --cov=app/api
-
-secure: "Dle7ulWzy9tC4zM1KNS+TiCncNShmr23a1SxPO1OQ4Tbp32IDAdXEz8kH9nEjWELVH2LhWeCNXwhseJC2DCWr/WUnU/LJmGKlIzmffKjsjastwcAQAN2DtUF1qGn+wTJD7TxhEn2NfXHiuW7bqLdyBXW15FXpO0t95fOvLJDhbGqEHBcGhDKAXF+rxTdErB4LJqjMMbE2cxEqHWbiQful8jyTlBgw77M/tHzgNIZrahR8pgCcryy5DjCgY4Yz8fRgfD/f7ZGkOwetRmfOnz2UCMgOjfgTxV4vroYo2e2nTymlZwixvqELrFmQF+F0wTqlHHMlmWL1lmd2UVHbTCPpvVpapkgpy1fchAY2FuyDsjyeceEW0vb+4yhvuhc5JX0rxmdnyXH65MlEFZBW68xpICSI1SVvW59FNp7YeemOal4XbcIzmAdy7qUQACWFdopeV8bC4CtgKEA3LpL1bDJLNfhwtSsaVIhwid08UKQWc/nXt1DDgD7dBF6dPFGX6FwC1Mk9xN/lvpx8gdzLyAdcCjvUo8IDAmBviJugK3U47eUCaDPFYtPf5X8AadQdspoGeH9HkSF8yILHDN5b10I7f3jwp6KQFnu8eo0PP00eUa35HZDiS55xhBDoLTf0D0vwHi1TGYTVlxXztbbIW5tfTjTMNOvvUt7zUiQcVaJX0M="
-
+- python -m pytest --cov=app/api
 after_success:
-  - coveralls
-  - bash <(curl -s https://codecov.io/bash)
+- coveralls
+- bash <(curl -s https://codecov.io/bash)
