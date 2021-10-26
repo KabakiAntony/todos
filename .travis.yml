@@ -20,7 +20,11 @@ env:
   - TEST_DATABASE_URL="postgresql://kiarie:7194@localhost/todos_test_db"
   
 script:
+  - export SECRET_KEY=$SECRET_KEY
   - python -m pytest --cov=app/api
+
+secure: "Dle7ulWzy9tC4zM1KNS+TiCncNShmr23a1SxPO1OQ4Tbp32IDAdXEz8kH9nEjWELVH2LhWeCNXwhseJC2DCWr/WUnU/LJmGKlIzmffKjsjastwcAQAN2DtUF1qGn+wTJD7TxhEn2NfXHiuW7bqLdyBXW15FXpO0t95fOvLJDhbGqEHBcGhDKAXF+rxTdErB4LJqjMMbE2cxEqHWbiQful8jyTlBgw77M/tHzgNIZrahR8pgCcryy5DjCgY4Yz8fRgfD/f7ZGkOwetRmfOnz2UCMgOjfgTxV4vroYo2e2nTymlZwixvqELrFmQF+F0wTqlHHMlmWL1lmd2UVHbTCPpvVpapkgpy1fchAY2FuyDsjyeceEW0vb+4yhvuhc5JX0rxmdnyXH65MlEFZBW68xpICSI1SVvW59FNp7YeemOal4XbcIzmAdy7qUQACWFdopeV8bC4CtgKEA3LpL1bDJLNfhwtSsaVIhwid08UKQWc/nXt1DDgD7dBF6dPFGX6FwC1Mk9xN/lvpx8gdzLyAdcCjvUo8IDAmBviJugK3U47eUCaDPFYtPf5X8AadQdspoGeH9HkSF8yILHDN5b10I7f3jwp6KQFnu8eo0PP00eUa35HZDiS55xhBDoLTf0D0vwHi1TGYTVlxXztbbIW5tfTjTMNOvvUt7zUiQcVaJX0M="
+
 after_success:
   - coveralls
   - bash <(curl -s https://codecov.io/bash)
