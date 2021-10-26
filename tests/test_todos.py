@@ -58,15 +58,12 @@ class TestTodos(TodosBaseTest):
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
-        print(signin_user_response.json['data'])
         create_todo_response = self.client.post(
             '/todos',
             data=json.dumps(self.todo),
             headers={'auth_token': auth_token},
             content_type="application/json"
         )
-        # print(create_todo_response.json['data'], "data from todos create")
-        print(create_todo_response.json['error'], "error from todos create")
         self.assertEqual(create_todo_response.status_code, 201)
 
     def test_b_getting_all_todos_for_a_user(self):
@@ -76,7 +73,6 @@ class TestTodos(TodosBaseTest):
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
-        print(signin_user_response.json['error'], "error from todos create")
         get_user_todos_response = self.client.get(
             '/todos',
             headers={'auth_token': auth_token}
@@ -99,7 +95,6 @@ class TestTodos(TodosBaseTest):
             content_type="application/json"
         )
         self.assertEqual(signin_user_response.status_code, 200)
-        print(signin_user_response.json['error'], "error from todos create")
         auth_token = signin_user_response.json['data']['auth_token']
         get_user_todos_response = self.client.get(
             '/todos',
@@ -189,20 +184,6 @@ class TestTodos(TodosBaseTest):
             content_type="application/json"
         )
         self.assertEqual(delete_todo_response.status_code, 200)
-
-    # def test_j_deleting_a_non_existent_todo(self):
-    #     """
-    #     test deleting a specific todo given an id
-    #     """
-    #     signin_user_response = self.signin_user()
-    #     self.assertEqual(signin_user_response.status_code, 200)
-    #     auth_token = signin_user_response.json['data']['auth_token']
-    #     delete_todo_response = self.client.delete(
-    #         f'/todos/{10}',
-    #         headers={'auth_token': auth_token},
-    #         content_type="application/json"
-    #     )
-    #     self.assertEqual(delete_todo_response.status_code, 404)
 
     def test_z_tearing_down(self):
         """
