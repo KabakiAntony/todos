@@ -27,7 +27,6 @@ def create_todo(user):
     try:
         todo_data = request.get_json()
         todo = todo_data['todo']
-        # creation_date = todo_data['creation_date']
         date_created = datetime.datetime.utcnow()
         creation_date = date_created.strftime("%Y-%m-%d")
 
@@ -91,6 +90,10 @@ def edit_todo(user, id):
         user_id = user['id']
         todo_id = id
 
+        todo = Todos.query.filter_by(user_id=user_id).filter_by(id=id).first()
+        if not todo:
+            abort(404, "The todo you are updating does not exist")
+
         Todos.query.filter_by(id=todo_id).filter_by(user_id=user_id).update(
             dict(todo=f"{todo_update}")
         )
@@ -140,6 +143,10 @@ def delete_specific_user_todos(user, id):
     """
     try:
         user_id = user['id']
+
+        todo = Todos.query.filter_by(user_id=user_id).filter_by(id=id).first()
+        if not todo:
+            abort(404, "The todo you are deleting does not exist")
 
         Todos.query.filter_by(user_id=user_id).filter_by(id=id).delete()
         db.session.commit()

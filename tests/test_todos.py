@@ -183,6 +183,82 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(delete_todo_response.status_code, 200)
 
+    def test_j_updating_a_non_existent_todo(self):
+        """
+        test updating a tod that does not exist
+        """
+        signin_user_response = self.signin_user()
+        self.assertEqual(signin_user_response.status_code, 200)
+        auth_token = signin_user_response.json['data']['auth_token']
+        update_todo_response = self.client.put(
+            f'/todos/{10}',
+            data=json.dumps(self.updated_todo),
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
+        self.assertEqual(update_todo_response.status_code, 404)
+
+    def test_k_deleting_a_non_existent_todo(self):
+        """
+        test deleting a todo that does not exist
+        """
+        signin_user_response = self.signin_user()
+        self.assertEqual(signin_user_response.status_code, 200)
+        auth_token = signin_user_response.json['data']['auth_token']
+        delete_todo_response = self.client.delete(
+            f'/todos/{10}',
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
+        self.assertEqual(delete_todo_response.status_code, 404)
+
+    def test_l_updating_a_todo_with_token_missing(self):
+        """
+        test updating a todo with token missing
+        """
+        update_todo_response = self.client.put(
+            f'/todos/{1}',
+            data=json.dumps(self.updated_todo),
+            content_type="application/json"
+        )
+        self.assertEqual(update_todo_response.status_code, 403)
+
+    def test_m_updating_a_non_existent_todo(self):
+        """
+        test updating a  non existent todo
+        """
+        signin_user_response = self.signin_user()
+        self.assertEqual(signin_user_response.status_code, 200)
+        auth_token = signin_user_response.json['data']['auth_token']
+        update_todo_response = self.client.put(
+            f'/todos/{10}',
+            data=json.dumps(self.updated_todo),
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
+        self.assertEqual(update_todo_response.status_code, 404)
+
+    def test_n_deleting_a_todo_with_token_missing(self):
+        """
+        test deleting a todo with token missing
+        """
+        delete_todo_response = self.client.delete(
+            f'/todos/{1}',
+            content_type="application/json"
+        )
+        self.assertEqual(delete_todo_response.status_code, 403)
+
+    def test_o_creating_todo_with_token_missing(self):
+        """
+        test creating a new todo with token missing
+        """
+        create_todo_response = self.client.post(
+            '/todos',
+            data=json.dumps(self.todo),
+            content_type="application/json"
+        )
+        self.assertEqual(create_todo_response.status_code, 403)
+
     def test_z_tearing_down(self):
         """
         tear down  the database after running this
