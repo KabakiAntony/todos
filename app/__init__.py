@@ -2,7 +2,7 @@
 this is my application
 factory
 """
-from config import ProductionConfig
+from config import TestingConfig
 from flask import Flask
 from flask_migrate import Migrate
 from app.api.views.users import users as users_blueprint
@@ -16,7 +16,7 @@ def create_app():
     this is my app factory
     """
     app = Flask(__name__)
-    app.config.from_object(ProductionConfig())
+    app.config.from_object(TestingConfig())
 
     from app.api.models import db, ma
 
