@@ -118,8 +118,8 @@ def update_password(user):
         user_data = request.get_json()
         email = user['email']
         new_password = user_data['password']
-        if user['email'] != user_data['email']:
-            abort(403, "You are not authorized to carryout this action.")
+        # if user['email'] != user_data['email']:
+        #     abort(403, "You are not authorized to carryout this action.")
 
         check_for_whitespace(user_data, ["email", "password"])
         isValidEmail(email)
