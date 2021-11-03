@@ -31,6 +31,10 @@ class TestUsers(TodosBaseTest):
         "email": "kabaki.kiarie@gmail.com",
         "password": "newpassword"
     }
+    unqualified_password = {
+        "email": "kabaki.kiarie@gmail.com",
+        "password": "short"
+    }
 
     def create_new_user(self, data={}):
         if not data:
@@ -86,7 +90,6 @@ class TestUsers(TodosBaseTest):
         """
         test user sign in with correct credentials
         """
-        self.create_new_user()
         response = self.client.post(
             '/users/signin',
             data=json.dumps(self.user),
@@ -98,7 +101,6 @@ class TestUsers(TodosBaseTest):
         """
         test user sign in with wrong password
         """
-        self.create_new_user()
         response = self.client.post(
             '/users/signin',
             data=json.dumps(self.wrong_password),
@@ -121,7 +123,6 @@ class TestUsers(TodosBaseTest):
         """
         test signing up a user twice
         """
-        self.create_new_user()
         response = self.create_new_user()
         self.assertEqual(response.status_code, 409)
 
@@ -129,7 +130,6 @@ class TestUsers(TodosBaseTest):
         """
         test password update for a given user
         """
-        self.create_new_user()
         resp = self.client.post(
             '/users/signin',
             data=json.dumps(self.user),
@@ -143,6 +143,27 @@ class TestUsers(TodosBaseTest):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_i_password_update_with_an_unqualified_password(self):
+        """
+        test password update for a given user
+        with a short password
+        """
+        resp = self.client.post(
+            '/users/signin',
+            data=json.dumps(self.new_password),
+            content_type='application/json'
+        )
+        print(resp.json)
+        auth_token = resp.json['data']['auth_token']
+        print(auth_token)
+        response = self.client.put(
+            '/users/update-password',
+            data=json.dumps(self.unqualified_password),
+            headers={'auth_token': auth_token},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 400)
 
     def test_z_tearing_down(self):
         db.session.remove()
