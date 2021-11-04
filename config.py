@@ -15,13 +15,13 @@ class Config(object):
             'postgres://', 'postgresql://')
 
 
-# class ProductionConfig(Config):
-#     DEBUG = True
+class ProductionConfig(Config):
+    DEBUG = True
 
 
-# class DevelopmentConfig(Config):
-#     DEBUG = True
-#     TESTING = True
+class DevelopmentConfig(Config):
+    DEBUG = True
+    TESTING = True
 
 
 class TestingConfig(Config):
