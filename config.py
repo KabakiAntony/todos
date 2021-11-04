@@ -13,11 +13,8 @@ class Config(object):
     Testing = False
     Debug = False
 
-    database_path = os.environ.get('DATABASE_URL')
-    if database_path.startswith("postgres://"):
-        database_path = database_path.replace(
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace(
             'postgres://', 'postgresql://', 1)
-    SQLALCHEMY_DATABASE_URI = database_path
 
 
 class ProductionConfig(Config):
