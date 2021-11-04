@@ -67,7 +67,17 @@ todos is a basic app for capturing things that I need to be done for a given day
 <details>
 <summary>todos endpoints</summary>
 
-    Keep and eye here for the various endpoints you can use with this  backend.
+METHOD       | ENDPOINT      |  DESCRIPTION
+------------ | ------------- | ------------
+POST  |  /users/signup  | signup a user
+POST  |  /users/signin  | signin a user
+PUT   |  /users/update-password |change/update a user password
+POST  |  /todos         | create a new todo
+GET   |  /todos         | get all todos for a user
+PUT   |  /todos/<id>    | edit / update a todo given its id
+GET   |  /todos/<id>    | get a specific todo given it's id
+DELETE|  /todos/<id>    | delete a todo given it's id
+
 
 </details>
 
