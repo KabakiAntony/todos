@@ -1,7 +1,5 @@
 import os
-
 from dotenv import load_dotenv
-load_dotenv()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
@@ -13,21 +11,21 @@ class Config(object):
     Testing = False
     Debug = False
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace(
-            'postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', '').replace(
+            'postgres://', 'postgresql://')
 
 
-class ProductionConfig(Config):
-    DEBUG = True
+# class ProductionConfig(Config):
+#     DEBUG = True
 
 
-class DevelopmentConfig(Config):
-    DEBUG = True
-    TESTING = True
+# class DevelopmentConfig(Config):
+#     DEBUG = True
+#     TESTING = True
 
 
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL').replace(
-            'postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL', '').replace(
+            'postgres://', 'postgresql://')
