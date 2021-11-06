@@ -52,7 +52,7 @@ and password.
             {
                 "data": 
                 {
-                    "auth_token": "eyJ0eXAiOiJKj5dKcs8ExbfLBicFe4",
+                    "auth_token": "usethetokengottenfromhereonotherroutes",
                     "message": "Signed in successfully preparing your dashboard..."
                 }
             }
@@ -77,7 +77,7 @@ change or whether they have forgotten it.
     
     + Headers
 
-            auth-token: "eyJ0eXAiOiJKj5dKcs8ExbfLBicsh54bfe4rvbre4Fe4"
+            auth-token: "sometokengotfromresetemail"
     
 + Response 200 (application/json)
 
@@ -113,3 +113,111 @@ A signed in user will be able to create a new todo.
                {
                     "data": "New todo created successfully."
                 }
+
+## Get todos [/todos]
+
+### Get user todos [GET]
+
+A signed in user will be able to view all their todos.
+
++ Request (application/json)
+    
+    + Headers
+
+            auth-token: "somettokengottenfromsigningin"
+    
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "data": [
+                        {
+                            "creation_date": "2021-11-06",
+                            "id": 1,
+                            "todo": "This is the first todo",
+                            "user_id": "Iki4YEoBvF"
+                        }
+                        ]
+            }
+
+## Get specific todo [/todos/{id}]
+
+    + Parameters
+        + id (number) - ID of the todo in the form of an integer
+
+### Get a given todo for a signed user [GET]
+
+A signed in user will be able to get a specific todo by supplying it's id
+
++ Request (application/json)
+    
+    + Headers
+
+            auth-token: "somettokengottenfromsigningin"
+    
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "data": [
+                        {
+                            "creation_date": "2021-11-06",
+                            "id": 1,
+                            "todo": "This is the first todo",
+                            "user_id": "Iki4YEoBvF"
+                        }
+                        ]
+            }
+
+## Update specific todo [/todos/{id}]
+
+    + Parameters
+        + id (number) - ID of the todo in the form of an integer
+
+### Update a specific todo for a signed in user [PUT]
+
+A signed in user will be able to update a specific todo by supplying it's id
+
++ Request (application/json)
+
+    + Body 
+            {
+                "todo": "This is an update"
+            }
+    
+    + Headers
+
+            auth-token: "somettokengottenfromsigningin"
+    
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "data": "Todo updated successfully."
+            }
+
+## Delete specific todo [/todos/{id}]
+
+    + Parameters
+        + id (number) - ID of the todo in the form of an integer
+
+### Update a specific todo for a signed in user [DELETE]
+
+A signed in user will be able to DELETE a specific todo by supplying it's id
+
++ Request (application/json)
+
+    + Headers
+
+            auth-token: "somettokengottenfromsigningin"
+    
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "data": "Todo deleted successfully."
+            }
