@@ -114,7 +114,6 @@ A signed in user will be able to create a new todo.
                     "data": "New todo created successfully."
                 }
 
-## Get todos [/todos]
 
 ### Get user todos [GET]
 
@@ -141,7 +140,7 @@ A signed in user will be able to view all their todos.
                         ]
             }
 
-## Get specific todo [/todos/{id}]
+## Specific todo [/todos/{id}]
 
     + Parameters
         + id (number) - ID of the todo in the form of an integer
@@ -171,10 +170,6 @@ A signed in user will be able to get a specific todo by supplying it's id
                         ]
             }
 
-## Update specific todo [/todos/{id}]
-
-    + Parameters
-        + id (number) - ID of the todo in the form of an integer
 
 ### Update a specific todo for a signed in user [PUT]
 
@@ -182,7 +177,8 @@ A signed in user will be able to update a specific todo by supplying it's id
 
 + Request (application/json)
 
-    + Body 
+    + Body
+
             {
                 "todo": "This is an update"
             }
@@ -199,12 +195,8 @@ A signed in user will be able to update a specific todo by supplying it's id
                 "data": "Todo updated successfully."
             }
 
-## Delete specific todo [/todos/{id}]
 
-    + Parameters
-        + id (number) - ID of the todo in the form of an integer
-
-### Update a specific todo for a signed in user [DELETE]
+### Delete a todo for a signed in user [DELETE]
 
 A signed in user will be able to DELETE a specific todo by supplying it's id
 
