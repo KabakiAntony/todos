@@ -2,6 +2,9 @@
 
 [![Build Status](https://app.travis-ci.com/KabakiAntony/todos.svg?branch=develop)](https://app.travis-ci.com/KabakiAntony/todos) [![Coverage Status](https://coveralls.io/repos/github/KabakiAntony/todos/badge.svg?branch=develop)](https://coveralls.io/github/KabakiAntony/todos?branch=develop) [![Maintainability](https://api.codeclimate.com/v1/badges/765e3273d918653417df/maintainability)](https://codeclimate.com/github/KabakiAntony/todos/maintainability)
 
+
+[API DOCUMENTATION](https://katodos.docs.apiary.io/#)
+
 ## what is todos
 todos is a basic app for capturing things that I need to be done for a given day or given time duration , it's aim albeit being a simplistic app is to showcase the understanding of REST API design principles,it will include Travis Ci which is going to help in the build process for continous integration and deployment. The project is going to be hosted on Heroku for the Rest API and the frontend will hosted on github pages.
 
