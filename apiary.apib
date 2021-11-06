@@ -1,0 +1,115 @@
+FORMAT: 1A
+HOST: https://ka-todos.herokuapp.com/
+
+# Todos
+
+Todos is a simple  todos app that allows one to create a user account,
+from there on you will be able to manage your todos with your user account.
+
+## Signup Users [/users/signup]
+
+### Register User [POST]
+
+A user will be able to register for an account so that they can create, view,
+delete, edit/update todos.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "email": "todos@mailpoof.com",
+                "password": "rainsunshinechairdesk"
+            }
+
++ Response 201 (application/json)
+
+        {
+            "data": "User created successfully"
+        }
+        
+        
+## Signin Users [/users/signin]
+
+### User Signin [POST]
+
+You may signin into the app it takes a user json object that has email
+and password.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "email": "todos@mailpoof.com",
+                "password": "rainsunshinechairdesk"
+            }
+
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "data": 
+                {
+                    "auth_token": "eyJ0eXAiOiJKj5dKcs8ExbfLBicFe4",
+                    "message": "Signed in successfully preparing your dashboard..."
+                }
+            }
+
+
+## Update password [/users/update-password]
+
+### Change user password [PUT]
+
+A user will be able to set a new password for their account, be it an occassional
+change or whether they have forgotten it.
+
++ Request (application/json)
+    
+   + Body
+
+            {
+                "email": "todos@mailpoof.com",
+                "password": "thisisanewpassword"
+            }
+
+    
+    + Headers
+
+            auth-token: "eyJ0eXAiOiJKj5dKcs8ExbfLBicsh54bfe4rvbre4Fe4"
+    
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "data": "Your password has been changed successfully."
+            }
+
+## Todos Collection [/todos]
+
+### Create a todo [POST]
+
+A signed in user will be able to create a new todo.
+
++ Request (application/json)
+    
+   + Body
+
+            {
+                "todo": "This is the first todo",
+            }
+
+    
+    + Headers
+
+            auth-token: "somettokengottenfromsigningin"
+    
++ Response 201 (application/json)
+
+    + Body
+    
+               {
+                    "data": "New todo created successfully."
+                }
