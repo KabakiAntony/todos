@@ -14,9 +14,19 @@ from app.api.utils import (
     generate_id,
     token_required
 )
+from app.api.email_utils import (
+    send_mail,
+    email_signature,
+    verify_email_content,
+    button_style,
+    password_reset_content
+)
+
 
 # get environment variables
 KEY = os.getenv("SECRET_KEY")
+VERIFY_EMAIL_URL = os.getenv("VERIFY_EMAIL_URL")
+PASSWORD_RESET_URL = os.getenv("PASSWORD_RESET_URL")
 
 
 @users.route('/users/signup', methods=['POST'])
@@ -42,10 +52,29 @@ def create_user():
         db.session.add(new_user)
         db.session.commit()
 
-        # add token creation and sending emails for account
-        # activation
+        token = jwt.encode(
+                {
+                    "id": id,
+                    "exp":
+                    datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
+                },
+                KEY,
+                algorithm="HS256",
+            )
+
+        subject = """Verify your email."""
+        content = f"""
+        Hey {email.split('.', 1)[0]},
+        {verify_email_content()}
+        <a href="{VERIFY_EMAIL_URL}?tkn={token.decode('utf-8')}"
+        style="{button_style()}">Verify email</a>
+        {email_signature()}
+        """
+        send_mail(email, subject, content)
+
         return custom_make_response(
-            "data", "User created successfully", 201)
+            "data", "Your account has been created successfully, Please check\
+                your email inbox to verify your email address.", 201)
 
     except Exception as e:
         return custom_make_response("error", f"{str(e)}", e.code)
@@ -104,6 +133,58 @@ def user_signin():
         return custom_make_response("error", f"{str(e)}", e.code)
 
 
+@users.route('/users/forgot', methods=['POST'])
+@token_required
+def forgot_password(user):
+    """
+    Send a password reset link when a user has
+    forgotten their password on request.
+    """
+    try:
+        user_data = request.get_json()
+        email = user_data['email']
+
+        check_for_whitespace(user_data, ["email"])
+        isValidEmail(email)
+        user = Users.query.filter_by(email=user_data["email"]).first()
+        this_user = user_schema.dump(user)
+
+        if user:
+            token = jwt.encode(
+                {
+                    "id": this_user["id"],
+                    # "email": this_user["email"],
+                    "exp": datetime.datetime.utcnow() + datetime.
+                    timedelta(minutes=30),
+                },
+                KEY,
+                algorithm="HS256",
+            )
+
+            subject = """Password Reset Request"""
+            content = f"""
+            Hey {this_user['email'].split('.', 1)[0]},
+            {password_reset_content()}
+            <a href="{PASSWORD_RESET_URL}?tkn={token.decode('utf-8')}"
+            style="{button_style()}"
+            >Reset Password</a>
+            {email_signature()}
+            """
+            send_mail(email, subject, content)
+
+        response = custom_make_response(
+            "data", {
+                "message": "An email has been sent to the address on record,\
+                If you don't receive one shortly, please contact\
+                    the site admin.",
+            }, 202
+        )
+        return response
+
+    except Exception as e:
+        return custom_make_response("error", f"{str(e)}", e.code)
+
+
 @users.route('/users/update-password', methods=['PUT'])
 @token_required
 def update_password(user):
@@ -118,8 +199,6 @@ def update_password(user):
         user_data = request.get_json()
         email = user['email']
         new_password = user_data['password']
-        # if user['email'] != user_data['email']:
-        #     abort(403, "You are not authorized to carryout this action.")
 
         check_for_whitespace(user_data, ["email", "password"])
         isValidEmail(email)
