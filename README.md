@@ -74,6 +74,7 @@ METHOD       | ENDPOINT      |  DESCRIPTION
 ------------ | ------------- | ------------
 POST  |  /users/signup  | signup a user
 POST  |  /users/signin  | signin a user
+POST  |  /users/forgot  | send reset password link
 PUT   |  /users/update-password |change/update a user password
 POST  |  /todos         | create a new todo
 GET   |  /todos         | get all todos for a user
