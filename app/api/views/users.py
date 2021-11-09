@@ -134,8 +134,7 @@ def user_signin():
 
 
 @users.route('/users/forgot', methods=['POST'])
-@token_required
-def forgot_password(user):
+def forgot_password():
     """
     Send a password reset link when a user has
     forgotten their password on request.

@@ -11,6 +11,12 @@ class TestUsers(TodosBaseTest):
         "email": "kabaki.kiarie@gmail.com",
         "password": "fireicewater"
     }
+    user_email = {
+        "email": "kabaki.kiarie@gmail.com"
+    }
+    invalid_user_email = {
+        "email": "kabaki.kiarie@gmail"
+    }
     empty_email_field = {
         "email": "",
         "password": "thisisapassword"
@@ -35,6 +41,7 @@ class TestUsers(TodosBaseTest):
         "email": "kabaki.kiarie@gmail.com",
         "password": "short"
     }
+    invalid_token = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"""
 
     def create_new_user(self, data={}):
         if not data:
@@ -154,9 +161,7 @@ class TestUsers(TodosBaseTest):
             data=json.dumps(self.new_password),
             content_type='application/json'
         )
-        print(resp.json)
         auth_token = resp.json['data']['auth_token']
-        print(auth_token)
         response = self.client.put(
             '/users/update-password',
             data=json.dumps(self.unqualified_password),
@@ -164,6 +169,42 @@ class TestUsers(TodosBaseTest):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 400)
+
+    def test_j_forgot_password(self):
+        """
+        test for  forgot password.
+        """
+        response = self.client.post(
+            '/users/forgot',
+            data=json.dumps(self.user_email),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 202)
+
+    def test_k_forgot_password_with_invalid_email(self):
+        """
+        test forgot email with an invalid email
+        """
+        response = self.client.post(
+            '/users/forgot',
+            data=json.dumps(self.invalid_user_email),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_l_password_update_with_invalid_token(self):
+        """
+        test password update for a given user
+        with an invalid token
+        """
+        auth_token = self.invalid_token
+        response = self.client.put(
+            '/users/update-password',
+            data=json.dumps(self.new_password),
+            headers={'auth_token': auth_token},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 401)
 
     def test_z_tearing_down(self):
         db.session.remove()
