@@ -4,6 +4,7 @@ factory
 """
 from config import ProductionConfig
 from flask import Flask
+from flask_cors import CORS
 from flask_migrate import Migrate
 from app.api.views.users import users as users_blueprint
 from app.api.views.todos import todos as todos_blueprint
@@ -17,6 +18,9 @@ def create_app():
     this is my app factory
     """
     app = Flask(__name__)
+    CORS(app, supports_credentials=True)
+    app.config['CORS_ORIGINS'] = ['http://localhost:8080/', 'https://kabakiantony.github.io/todo-ui/#/']
+    app.config['CORS_HEADERS'] = ['Content-Type', 'Authorization']
     app.config.from_object(ProductionConfig())
 
     from app.api.models import db, ma
