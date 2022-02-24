@@ -27,7 +27,7 @@ todos is a basic app for capturing things that I need to be done for a given day
 
       WINDOWS
 
-       venv\Scripts\activate
+      . venv\Scripts\activate
       
    ```
 
@@ -37,35 +37,31 @@ todos is a basic app for capturing things that I need to be done for a given day
         pip install -r requirements.txt
    ```
 
+4. Database initialization and configuration.
 
-4. Running tests
+The project uses PostgreSQL to persist data and if you wish to use the same you can [get it here](https://www.postgresql.org/download/) ,it supports different Operating Systems just follow the prompts for the different cases under each selection. To make your life easier you may also want to install pgAdmin it is an Open Source postgres administration platform, rather you will use it to create and manage database instances for Postgres, I highly suggested you install that also and if sold on it you can [get pgAdmin here](https://www.pgadmin.org/download/)
 
-   ```
-      python -m pytest --cov=app/api 
+Once you have successfully installed both then, Create both **todos** and **todos_test_db** - the usage is straight forward I believe. After creating databases then run the below command, it will apply the migrations to the database.
 
-        or you can use
-      
-      python -m nose2 -v 
-
-      The difference is that nose2 will not run coverage you will have to invoke coverage on your own
+   ```bash
+      flask db upgrade
 
    ```
 
-5. Start the server
+5. Running tests 
+
+You can run tests to assertain that the setup works
+
+   ```bash
+      python -m pytest --cov=app/api
 
    ```
+
+6. Start the server
+
+   ```bash
       flask run or python wsgi.py 
    ```
- NOTE "flask run" defaults to production where the debug mode is off 
-        and that denies one the chance of seeing the errors that arise
-        but the below settings will help override that.
-   ```
-      use **set** on windows and **export** on linux/mac
-      set FLASK_APP=wsgi.py
-      set FLASK_DEBUG=1
-      set FLASK_ENV=development
-       
-   ``` 
 
 <details>
 <summary>todos endpoints</summary>
@@ -73,14 +69,15 @@ todos is a basic app for capturing things that I need to be done for a given day
 METHOD       | ENDPOINT      |  DESCRIPTION
 ------------ | ------------- | ------------
 POST  |  /users/signup  | signup a user
+POST  |  /users/verify  | verify a user email
 POST  |  /users/signin  | signin a user
 POST  |  /users/forgot  | send reset password link
 PUT   |  /users/update-password |change/update a user password
 POST  |  /todos         | create a new todo
 GET   |  /todos         | get all todos for a user
-PUT   |  /todos/<id>    | edit / update a todo given its id
-GET   |  /todos/<id>    | get a specific todo given it's id
-DELETE|  /todos/<id>    | delete a todo given it's id
+PUT   |  /todos/{id}    | edit / update a todo given its id
+GET   |  /todos/{id}    | get a specific todo given it's id
+DELETE|  /todos/{id}    | delete a todo given it's id
 
 
 </details>
