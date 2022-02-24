@@ -9,12 +9,13 @@ import string
 from functools import wraps
 from flask import jsonify, make_response, abort, request
 from app.api.models.users import Users, user_schema
+from jwt import DecodeError, ExpiredSignatureError
 
 
 KEY = os.getenv("SECRET_KEY")
 
 
-def custom_make_response(key, value, status):
+def custom_make_response(key, message, status):
     """
     This is a custom make response to make a
     json object that is returned by all endpoints
@@ -26,8 +27,10 @@ def custom_make_response(key, value, status):
     parameter
     :param status: this will be a status code for the return
     """
-    raw_dict = {key: value}
-    raw_dict[key] = value
+    raw_dict = {"status": status}
+    if key == 'error' and ':' in message:
+        message = message.split(':', 1)[1]
+    raw_dict[key] = message
     return make_response(jsonify(raw_dict), status)
 
 
@@ -80,19 +83,29 @@ def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         user_token = None
-        if 'auth_token' in request.headers:
-            user_token = request.headers['auth_token']
-        if not user_token:
-            return custom_make_response("error", "Token is missing", 403)
+
+        if 'auth_token' not in request.headers:
+            return custom_make_response(
+                "error",
+                "Token is missing, please signin again and try.", 403)
+
+        user_token = request.headers['auth_token']
+
         try:
-            if user_token:
-                data = jwt.decode(user_token, KEY, algorithm="HS256")
-                current_user = Users.query.filter_by(id=data['id']).first()
-                _data = user_schema.dump(current_user)
-        except Exception as e:
-            # exceptions go to site administrator log and email
-            # the user gets a friendly error notification
-            return custom_make_response("error", f"Token {str(e)}", 401)
+            data = jwt.decode(user_token, KEY, algorithm="HS256")
+            current_user = Users.query.filter_by(id=data['id']).first()
+            _data = user_schema.dump(current_user)
+
+        except ExpiredSignatureError:
+            return custom_make_response(
+                "error",
+                "Token is expired, please signin again and try.", 403)
+
+        except DecodeError:
+            return custom_make_response(
+                "error",
+                "The token is invalid, please signin again and try.", 403)
+
         return f(_data, *args, **kwargs)
     return decorated
 
