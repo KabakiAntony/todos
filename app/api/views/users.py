@@ -37,15 +37,25 @@ def create_user():
     """
     try:
         user_data = request.get_json()
-        email = user_data['email']
+
+        if ('email' or 'password') not in user_data.keys():
+            abort(
+                400,
+                """
+                Email and or password is missing,
+                please check and try again.
+                """)
+
+        email = user_data["email"]
         password = user_data['password']
 
         check_for_whitespace(user_data, ["email", "password"])
-        isValidEmail(user_data['email'])
-        isValidPassword(user_data['password'])
+        isValidEmail(email)
+        isValidPassword(password)
 
-        if Users.query.filter_by(email=user_data["email"]).first():
-            abort(409, "User already exists")
+        if Users.query.filter_by(email=email).first():
+            abort(409, "User account already exists, reset password if forgotten\
+                or supply a different email.")
 
         id = generate_id()
         new_user = Users(id=id, email=email, password=password)
@@ -64,7 +74,7 @@ def create_user():
 
         subject = """Verify your email."""
         content = f"""
-        Hey {email.split('.', 1)[0]},
+        Hey {email.split('@', 1)[0]},
         {verify_email_content()}
         <a href="{VERIFY_EMAIL_URL}?tkn={token.decode('utf-8')}"
         style="{button_style()}">Verify email</a>
@@ -87,6 +97,14 @@ def user_signin():
     """
     try:
         user_data = request.get_json()
+
+        if ('email' or 'password') not in user_data.keys():
+            abort(
+                400,
+                """
+                Email and or password is missing,
+                please check and try again.""")
+
         email = user_data['email']
         password = user_data['password']
 
@@ -99,7 +117,7 @@ def user_signin():
             abort(
                 404,
                 "User account could not be found,\
-                    Please register to use the application.")
+                    Please sign up to use the application.")
 
         _user = user_schema.dump(user)
         _password = _user["password"]
@@ -141,6 +159,10 @@ def forgot_password():
     """
     try:
         user_data = request.get_json()
+
+        if 'email' not in user_data.keys():
+            abort(400, "Email is missing, please enter and try again.")
+
         email = user_data['email']
 
         check_for_whitespace(user_data, ["email"])
@@ -152,7 +174,6 @@ def forgot_password():
             token = jwt.encode(
                 {
                     "id": this_user["id"],
-                    # "email": this_user["email"],
                     "exp": datetime.datetime.utcnow() + datetime.
                     timedelta(minutes=30),
                 },
@@ -162,7 +183,7 @@ def forgot_password():
 
             subject = """Password Reset Request"""
             content = f"""
-            Hey {this_user['email'].split('.', 1)[0]},
+            Hey {this_user['email'].split('@', 1)[0]},
             {password_reset_content()}
             <a href="{PASSWORD_RESET_URL}?tkn={token.decode('utf-8')}"
             style="{button_style()}"
@@ -196,6 +217,14 @@ def update_password(user):
     """
     try:
         user_data = request.get_json()
+
+        if ('email' or 'password') not in user_data.keys():
+            abort(
+               400,
+               """
+               Email and or password is missing,
+               please check and try again.
+               """)
         email = user['email']
         new_password = user_data['password']
 
