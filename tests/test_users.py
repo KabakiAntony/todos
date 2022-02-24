@@ -204,7 +204,7 @@ class TestUsers(TodosBaseTest):
             headers={'auth_token': auth_token},
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     def test_z_tearing_down(self):
         db.session.remove()
