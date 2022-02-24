@@ -11,19 +11,20 @@ todos is a basic app for capturing things that I need to be done for a given day
 
 ## Setup and installation
 
+   The unsaid part is ofcourse you hhave to clone this repo and **cd** into it only then you can start working following the steps below.
+
 1. Set up virtualenv
 
    ```bash
         virtualenv venv
    ```
 
-2. Activate virtualenv on linux and windows  as below
+2. Activate virtualenv 
 
    ```bash
       LINUX/MAC
 
-       source venv/bin/activate or 
-       . venv/bin/activate
+      . venv/bin/activate
 
       WINDOWS
 
@@ -37,15 +38,32 @@ todos is a basic app for capturing things that I need to be done for a given day
         pip install -r requirements.txt
    ```
 
-4. Database initialization and configuration.
+4. Database configuration.
 
-The project uses PostgreSQL to persist data and if you wish to use the same you can [get it here](https://www.postgresql.org/download/) ,it supports different Operating Systems just follow the prompts for the different cases under each selection. To make your life easier you may also want to install pgAdmin it is an Open Source postgres administration platform, rather you will use it to create and manage database instances for Postgres, I highly suggested you install that also and if sold on it you can [get pgAdmin here](https://www.pgadmin.org/download/)
+   The project uses PostgreSQL to persist data and if you wish to use the same you can [get it here](https://www.postgresql.org/download/) ,it supports different Operating Systems just follow the prompts for the different cases, depending on your operating system. To make your life easier you will also want to install pgAdmin it is an Open Source postgres administration platform, rather you will use it to create and manage database instances for Postgres, I highly suggested you install that also and if sold on it you can [get it here](https://www.pgadmin.org/download/)
 
-Once you have successfully installed both then, Create both **todos** and **todos_test_db** - the usage is straight forward I believe. After creating databases then run the below command, it will apply the migrations to the database.
+   Once you have successfully installed both then, Create both **todos** and **todos_test_db** databases on pgAdmin - their usage is straight forward I believe. After creating databases then run the below command, it will apply the migrations to the database.
+
+   ## .env file example
+
+   Before finishing up on the database part, you will want to create a **.env** file in the root of your project and below is an example of it's contents.
+
+   ```bash
+      FLASK_APP = wsgi.py
+      FLASK_DEBUG = 1
+      FLASK_ENV = "development"
+      SECRET_KEY = "yoursecretkey"
+      SENDGRID_KEY = "sendgrid api key to assit in sending emails"
+      DATABASE_URL = "postgres://postgres:{your postgres password}@localhost/todos"
+      TEST_DATABASE_URL= "postgres://postgres:{your postgres password}@localhost/todos_test_db"
+      VERIFY_EMAIL_URL= "{url for your frontend app}/verify"
+      PASSWORD_RESET_URL = "{url for your frontend app}/reset"
+   ```
+
+   Once you are done with the **.env** file then you can run the below command
 
    ```bash
       flask db upgrade
-
    ```
 
 5. Running tests 
@@ -54,7 +72,6 @@ You can run tests to assertain that the setup works
 
    ```bash
       python -m pytest --cov=app/api
-
    ```
 
 6. Start the server
