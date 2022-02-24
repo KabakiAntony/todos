@@ -18,8 +18,8 @@ def create_app():
     this is my app factory
     """
     app = Flask(__name__)
-    CORS(app, supports_credentials=True)
-    app.config['CORS_ORIGINS'] = ['http://localhost:8080/', 'https://kabakiantony.github.io/todo-ui/#/']
+    CORS(app)
+    app.config['CORS_ORIGINS'] = ['*']
     app.config['CORS_HEADERS'] = ['Content-Type', 'Authorization']
     app.config.from_object(ProductionConfig())
 
