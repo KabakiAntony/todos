@@ -65,20 +65,23 @@ def email_signature():
     <br/>
     <br/>
     All the best,<br/>
-    Todos Admin.
+    Todos Team.
     """
     return signature
 
 
 def button_style():
     """this returns the style for the button"""
-    style = """font-weight:bold;
-    background-color: #0096D6;
-    border-radius:1.5rem;
+    style = """
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #3F3D56;
+    border-radius:0.5rem;
+    border:none;
     text-decoration: none;
-    padding: 7px 28px;
+    padding: 10px;
     color:rgb(255, 255, 255);
-    margin-top:10px;
+    font-size: 100%;
     margin-bottom: 10px;
-    font-size: 120%;"""
+    margin-top: 10px;
+    """
     return style
