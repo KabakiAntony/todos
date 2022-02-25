@@ -77,14 +77,14 @@ def create_user():
         Hey {email.split('@', 1)[0]},
         {verify_email_content()}
         <a href="{VERIFY_EMAIL_URL}?tkn={token.decode('utf-8')}"
-        style="{button_style()}">Verify email</a>
+        style="{button_style()}">Verify your account</a>
         {email_signature()}
         """
         send_mail(email, subject, content)
 
         return custom_make_response(
             "data", "Your account has been created successfully, Please check\
-                your email inbox to verify your email address.", 201)
+                your email inbox to verify your account.", 201)
 
     except Exception as e:
         return custom_make_response("error", f"{str(e)}", e.code)
@@ -121,6 +121,13 @@ def user_signin():
 
         _user = user_schema.dump(user)
         _password = _user["password"]
+
+        if _user['verified'] != 'True':
+            abort(
+                401,
+                "You have not verified your email, please\
+                    check your verification email in your inbox and \
+                        click on verify your account.")
 
         if not Users.compare_password(_password, password):
             abort(
@@ -241,6 +248,31 @@ def update_password(user):
         return custom_make_response(
             "data",
             "Your password has been changed successfully.",
+            200
+        )
+    except Exception as e:
+        return custom_make_response("error", f"{str(e)}", e.code)
+
+
+@users.route('/users/verify', methods=['POST'])
+@token_required
+def verify_user_email(user):
+    """
+    This will verify the user email after sign up
+    One will simply not be able to signin after 
+    sign up unless they verify their account.
+    """
+    try:
+        Users.query.filter_by(
+            email=user["email"]).update(dict(verified="True"))
+        db.session.commit()
+
+        return custom_make_response(
+            "data",
+            """
+            You have verified your account successfully, please hold
+            as we redirect you to  the signin page.
+            """,
             200
         )
     except Exception as e:
