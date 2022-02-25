@@ -10,6 +10,7 @@ class Users(db.Model):
     id = db.Column(db.String(20), primary_key=True)
     email = db.Column(db.String(255), index=True, unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    verified = db.Column(db.String(25), default="False", nullable=True)
 
     def __init__(self, id, email, password):
         self.id = id
@@ -35,7 +36,7 @@ class Users(db.Model):
 
 class UsersSchema(ma.Schema):
     class Meta:
-        fields = ("id", "email", "password")
+        fields = ("id", "email", "password", "verified")
 
 
 user_schema = UsersSchema()
