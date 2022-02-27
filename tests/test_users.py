@@ -43,16 +43,17 @@ class TestUsers(TodosBaseTest):
     }
     invalid_token = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"""
 
-    def create_new_user(self, data={}):
-        if not data:
-            data = self.user
+    def signup_user(self):
+        """
+        reusable user signup function
+        """
         response = self.client.post(
             '/users/signup',
             data=json.dumps(self.user),
-            content_type='application/json'
+            content_type="application/json"
         )
         return response
-
+    
     def signin_user(self):
         """
         reusable user signin function
@@ -64,12 +65,20 @@ class TestUsers(TodosBaseTest):
         )
         return response
 
-    def test_a_user_creation(self):
+    def test_a_user_creation_and_verification(self):
         """
         test creation of a user in the system
         """
-        response = self.create_new_user()
+        response = self.signup_user()
         self.assertEqual(response.status_code, 201)
+        auth_token = response.json['data']['tkn']
+
+        verification_response = self.client.post(
+            '/users/verify',
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
+        self.assertEqual(verification_response.status_code, 200)
 
     def test_b_user_creation_with_empty_email_field(self):
         """
@@ -130,7 +139,7 @@ class TestUsers(TodosBaseTest):
         """
         test signing up a user twice
         """
-        response = self.create_new_user()
+        response = self.signup_user()
         self.assertEqual(response.status_code, 409)
 
     def test_h_password_update(self):
