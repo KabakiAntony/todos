@@ -83,8 +83,14 @@ def create_user():
         send_mail(email, subject, content)
 
         return custom_make_response(
-            "data", "Your account has been created successfully, Please check\
-                your email inbox to verify your account.", 201)
+            "data",
+            {
+                "message":
+                "Your account has been created successfully, Please check\
+                    your email inbox to verify your account",
+                "tkn": token.decode('utf-8'),
+            }, 201
+        )
 
     except Exception as e:
         return custom_make_response("error", f"{str(e)}", e.code)
