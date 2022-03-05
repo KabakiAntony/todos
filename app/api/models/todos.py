@@ -9,18 +9,17 @@ class Todos(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.String(20), db.ForeignKey("Users.id"))
-    creation_date = db.Column(db.Date())
-    todo = db.Column(db.String(255), nullable=False)
+    text = db.Column(db.String(255), nullable=False)
+    completed = db.Column(db.Boolean, default=False)
 
-    def __init__(self, user_id, creation_date, todo):
+    def __init__(self, user_id, text):
         self.user_id = user_id
-        self.creation_date = creation_date
-        self.todo = todo
+        self.text = text
 
 
 class TodosSchema(ma.Schema):
     class Meta:
-        fields = ("id", "user_id", "creation_date", "todo")
+        fields = ("id", "user_id", "text", "completed")
 
 
 todoSchema = TodosSchema()
