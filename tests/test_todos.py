@@ -16,13 +16,13 @@ class TestTodos(TodosBaseTest):
         "password": "bluewhaleschool"
     }
     todo = {
-        "todo": "finish all projects in flask.",
+        "text": "finish all projects in flask.",
     }
     updated_todo = {
-        "todo": " finished all projects in flask"
+        "text": " finished all projects in flask"
     }
     todo_with_empty_body = {
-        "todo": "",
+        "text": "",
     }
 
     def signup_user(self):
