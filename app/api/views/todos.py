@@ -26,22 +26,19 @@ def create_todo(user):
     """
     try:
         todo_data = request.get_json()
-        todo = todo_data['todo']
-        date_created = datetime.datetime.utcnow()
-        creation_date = date_created.strftime("%Y-%m-%d")
+        text = todo_data['text']
 
-        check_for_whitespace(todo_data, ["todo"])
+        check_for_whitespace(todo_data, ["text"])
 
         user_id = user['id']
 
-        new_todo = Todos(
-            user_id=user_id, creation_date=creation_date, todo=todo)
+        new_todo = Todos(user_id=user_id, text=text)
         db.session.add(new_todo)
         db.session.commit()
 
         return custom_make_response(
             "data",
-            "New todo created successfully.",
+            "Todo added successfully.",
             201
         )
     except Exception as e:
@@ -85,8 +82,7 @@ def edit_todo(user, id):
     todo so that we can update it.
     """
     try:
-        todo_data = request.get_json()
-        todo_update = todo_data['todo']
+        updated_todo_data = request.get_json()
         user_id = user['id']
         todo_id = id
 
@@ -95,7 +91,7 @@ def edit_todo(user, id):
             abort(404, "The todo you are updating does not exist")
 
         Todos.query.filter_by(id=todo_id).filter_by(user_id=user_id).update(
-            dict(todo=f"{todo_update}")
+            updated_todo_data
         )
         db.session.commit()
 
