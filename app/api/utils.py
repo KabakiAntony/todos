@@ -87,7 +87,7 @@ def token_required(f):
         if 'auth_token' not in request.headers:
             return custom_make_response(
                 "error",
-                "Token is missing, please signin again and try.", 403)
+                "Token is missing, request one and try again.", 403)
 
         user_token = request.headers['auth_token']
 
@@ -99,12 +99,12 @@ def token_required(f):
         except ExpiredSignatureError:
             return custom_make_response(
                 "error",
-                "Token is expired, please signin again and try.", 403)
+                "Token is expired, request a new one and try again.", 403)
 
         except DecodeError:
             return custom_make_response(
                 "error",
-                "The token is invalid, please signin again and try.", 403)
+                "The token is invalid, request a new one and try again.", 403)
 
         return f(_data, *args, **kwargs)
     return decorated
