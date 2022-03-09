@@ -188,6 +188,7 @@ def forgot_password():
             token = jwt.encode(
                 {
                     "id": this_user["id"],
+                    "email": email,
                     "exp": datetime.datetime.utcnow() + datetime.
                     timedelta(minutes=30),
                 },
@@ -211,6 +212,7 @@ def forgot_password():
                 "message": "An email has been sent to the address on record,\
                 If you don't receive one shortly, please contact\
                     the site admin.",
+                "tkn": token.decode('utf-8'),
             }, 202
         )
         return response
