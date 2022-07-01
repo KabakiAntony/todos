@@ -25,29 +25,22 @@ class TestTodos(TodosBaseTest):
         "text": "",
     }
 
-    def signup_user(self):
+    def signup_and_verify_user(self):
         """
         reusable user signup function
         """
-        response = self.client.post(
+        signup_response = self.client.post(
             '/users/signup',
             data=json.dumps(self.user),
             content_type="application/json"
         )
-        return response
-
-    def verify_account(self):
-        """
-        verify user account
-        """
-        create_user_response = self.signup_user()
-        auth_token = create_user_response.json['data']['tkn']
-        response = self.client.post(
+        auth_token = signup_response.json['data']['tkn']
+        verification_response = self.client.post(
             '/users/verify',
             headers={'auth_token': auth_token},
             content_type="application/json"
         )
-        return response
+        return signup_response, verification_response
 
     def signin_user(self):
         """
@@ -60,16 +53,15 @@ class TestTodos(TodosBaseTest):
         )
         return response
 
-    def test_a_creating_todo(self):
+    def test_creating_todo(self):
         """
         test creating a new todo
         """
-        verify_user_response = self.verify_account()
-        self.assertEqual(verify_user_response.status_code, 200)
+        self.signup_and_verify_user()
 
-        signin_user_response = self.signin_user()
-        self.assertEqual(signin_user_response.status_code, 200)
-        auth_token = signin_user_response.json['data']['auth_token']
+        signin_response = self.signin_user()
+        self.assertEqual(signin_response.status_code, 200)
+        auth_token = signin_response.json['data']['auth_token']
 
         create_todo_response = self.client.post(
             '/todos',
@@ -79,13 +71,21 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(create_todo_response.status_code, 201)
 
-    def test_b_getting_all_todos_for_a_user(self):
+    def test_getting_all_todos_for_a_user(self):
         """
         test getting all todos for a given user
         """
-        signin_user_response = self.signin_user()
-        self.assertEqual(signin_user_response.status_code, 200)
-        auth_token = signin_user_response.json['data']['auth_token']
+        self.signup_and_verify_user()
+        signin_response = self.signin_user()
+        self.assertEqual(signin_response.status_code, 200)
+        auth_token = signin_response.json['data']['auth_token']
+
+        self.client.post(
+            '/todos',
+            data=json.dumps(self.todo),
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
 
         get_user_todos_response = self.client.get(
             '/todos',
@@ -93,7 +93,7 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(get_user_todos_response.status_code, 200)
 
-    def test_c_getting_non_existent_todos_for_a_user(self):
+    def test_getting_non_existent_todos_for_a_user(self):
         """
         test getting todos for user that has no todos
         """
@@ -124,13 +124,14 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(get_user_todos_response.status_code, 404)
 
-    def test_d_creating_todo_with_no_todo_body(self):
+    def test_creating_todo_with_no_todo_body(self):
         """
         test creating todo with no body
         """
-        signin_user_response = self.signin_user()
-        self.assertEqual(signin_user_response.status_code, 200)
-        auth_token = signin_user_response.json['data']['auth_token']
+        self.signup_and_verify_user()
+        signin_response = self.signin_user()
+        self.assertEqual(signin_response.status_code, 200)
+        auth_token = signin_response.json['data']['auth_token']
         create_todo_response = self.client.post(
             '/todos',
             data=json.dumps(self.todo_with_empty_body),
@@ -139,13 +140,22 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(create_todo_response.status_code, 400)
 
-    def test_e_updating_a_todo(self):
+    def test_updating_a_todo(self):
         """
         test updating a todo
         """
-        signin_user_response = self.signin_user()
-        self.assertEqual(signin_user_response.status_code, 200)
-        auth_token = signin_user_response.json['data']['auth_token']
+        self.signup_and_verify_user()
+        signin_response = self.signin_user()
+        self.assertEqual(signin_response.status_code, 200)
+        auth_token = signin_response.json['data']['auth_token']
+
+        self.client.post(
+            '/todos',
+            data=json.dumps(self.todo),
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
+
         update_todo_response = self.client.put(
             f'/todos/{1}',
             data=json.dumps(self.updated_todo),
@@ -154,13 +164,22 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(update_todo_response.status_code, 200)
 
-    def test_f_getting_a_specific_todo(self):
+    def test_getting_a_specific_todo(self):
         """
         test getting a specific todo with the todo id
         """
+        self.signup_and_verify_user()
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
+
+        self.client.post(
+            '/todos',
+            data=json.dumps(self.todo),
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
+        
         get_todo_response = self.client.get(
             f'/todos/{1}',
             headers={'auth_token': auth_token},
@@ -168,10 +187,11 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(get_todo_response.status_code, 200)
 
-    def test_g_getting_a_non_existent_todo(self):
+    def test_getting_a_non_existent_todo(self):
         """
         test getting a specific todo with the todo id
         """
+        self.signup_and_verify_user()
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
@@ -182,7 +202,7 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(get_todo_response.status_code, 404)
 
-    def test_h_creating_todo_with_token_missing(self):
+    def test_creating_todo_with_token_missing(self):
         """
         test creating a new todo
         """
@@ -193,13 +213,22 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(create_todo_response.status_code, 403)
 
-    def test_i_deleting_a_todo(self):
+    def test_deleting_a_todo(self):
         """
         test deleting a specific todo given an id
         """
+        self.signup_and_verify_user()
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
+
+        self.client.post(
+            '/todos',
+            data=json.dumps(self.todo),
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
+
         delete_todo_response = self.client.delete(
             f'/todos/{1}',
             headers={'auth_token': auth_token},
@@ -207,10 +236,11 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(delete_todo_response.status_code, 200)
 
-    def test_j_updating_a_non_existent_todo(self):
+    def test_updating_a_non_existent_todo(self):
         """
         test updating a tod that does not exist
         """
+        self.signup_and_verify_user()
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
@@ -222,10 +252,11 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(update_todo_response.status_code, 404)
 
-    def test_k_deleting_a_non_existent_todo(self):
+    def test_deleting_a_non_existent_todo(self):
         """
         test deleting a todo that does not exist
         """
+        self.signup_and_verify_user()
         signin_user_response = self.signin_user()
         self.assertEqual(signin_user_response.status_code, 200)
         auth_token = signin_user_response.json['data']['auth_token']
@@ -236,10 +267,11 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(delete_todo_response.status_code, 404)
 
-    def test_l_updating_a_todo_with_token_missing(self):
+    def test_updating_a_todo_with_token_missing(self):
         """
         test updating a todo with token missing
         """
+        self.signup_and_verify_user()
         update_todo_response = self.client.put(
             f'/todos/{1}',
             data=json.dumps(self.updated_todo),
@@ -247,22 +279,7 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(update_todo_response.status_code, 403)
 
-    def test_m_updating_a_non_existent_todo(self):
-        """
-        test updating a  non existent todo
-        """
-        signin_user_response = self.signin_user()
-        self.assertEqual(signin_user_response.status_code, 200)
-        auth_token = signin_user_response.json['data']['auth_token']
-        update_todo_response = self.client.put(
-            f'/todos/{10}',
-            data=json.dumps(self.updated_todo),
-            headers={'auth_token': auth_token},
-            content_type="application/json"
-        )
-        self.assertEqual(update_todo_response.status_code, 404)
-
-    def test_n_deleting_a_todo_with_token_missing(self):
+    def test_deleting_a_todo_with_token_missing(self):
         """
         test deleting a todo with token missing
         """
@@ -272,21 +289,3 @@ class TestTodos(TodosBaseTest):
         )
         self.assertEqual(delete_todo_response.status_code, 403)
 
-    def test_o_creating_todo_with_token_missing(self):
-        """
-        test creating a new todo with token missing
-        """
-        create_todo_response = self.client.post(
-            '/todos',
-            data=json.dumps(self.todo),
-            content_type="application/json"
-        )
-        self.assertEqual(create_todo_response.status_code, 403)
-
-    def test_z_tearing_down(self):
-        """
-        tear down  the database after running this
-        module to clear the data set up by this module.
-        """
-        db.session.remove()
-        db.drop_all()

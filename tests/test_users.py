@@ -43,16 +43,25 @@ class TestUsers(TodosBaseTest):
     }
     invalid_token = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"""
 
-    def signup_user(self):
+    def signup_and_verify_user(self):
         """
-        reusable user signup function
+        signup and verification of a correct
+        user account.
         """
-        response = self.client.post(
+        signup_response = self.client.post(
             '/users/signup',
             data=json.dumps(self.user),
             content_type="application/json"
         )
-        return response
+
+        auth_token = signup_response.json['data']['tkn']
+        verification_response = self.client.post(
+            '/users/verify',
+            headers={'auth_token': auth_token},
+            content_type="application/json"
+        )
+
+        return signup_response, verification_response
     
     def signin_user(self):
         """
@@ -64,23 +73,16 @@ class TestUsers(TodosBaseTest):
             content_type="application/json"
         )
         return response
-
-    def test_a_user_creation_and_verification(self):
+    
+    def test_user_creation_and_verification(self):
         """
         test creation of a user in the system
         """
-        response = self.signup_user()
-        self.assertEqual(response.status_code, 201)
-        auth_token = response.json['data']['tkn']
-
-        verification_response = self.client.post(
-            '/users/verify',
-            headers={'auth_token': auth_token},
-            content_type="application/json"
-        )
+        signup_response, verification_response = self.signup_and_verify_user()
+        self.assertEqual(signup_response.status_code, 201)
         self.assertEqual(verification_response.status_code, 200)
 
-    def test_b_user_creation_with_empty_email_field(self):
+    def test_user_creation_with_empty_email_field(self):
         """
         test user creation with an empty email field
         """
@@ -91,7 +93,7 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_c_user_creation_with_empty_password_field(self):
+    def test_user_creation_with_empty_password_field(self):
         """
         test user creation with an empty password field
         """
@@ -102,10 +104,12 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_d_user_signin(self):
+    def test_user_signin(self):
         """
         test user sign in with correct credentials
         """
+        self.signup_and_verify_user()
+
         response = self.client.post(
             '/users/signin',
             data=json.dumps(self.user),
@@ -113,10 +117,12 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_e_user_signin_with_wrong_password(self):
+    def test_user_signin_with_wrong_password(self):
         """
         test user sign in with wrong password
         """
+        self.signup_and_verify_user()
+        
         response = self.client.post(
             '/users/signin',
             data=json.dumps(self.wrong_password),
@@ -124,7 +130,7 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 403)
 
-    def test_f_user_signin_non_existent_user(self):
+    def test_user_signin_non_existent_user(self):
         """
         test signing in a non existent user
         """
@@ -135,17 +141,25 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_g_duplicate_user_creation(self):
+    def test_duplicate_user_creation(self):
         """
         test signing up a user twice
         """
-        response = self.signup_user()
-        self.assertEqual(response.status_code, 409)
+        self.signup_and_verify_user()
 
-    def test_h_password_update(self):
+        duplicate_response = self.client.post(
+            '/users/signup',
+            data=json.dumps(self.user),
+            content_type="application/json"
+        )
+        self.assertEqual(duplicate_response.status_code, 409)
+
+    def test_password_update(self):
         """
         test password update for a given user
         """
+        self.signup_and_verify_user()
+        
         resp = self.client.post(
             '/users/signin',
             data=json.dumps(self.user),
@@ -160,16 +174,14 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_i_password_update_with_an_unqualified_password(self):
+    def test_password_update_with_an_unqualified_password(self):
         """
         test password update for a given user
         with a short password
         """
-        resp = self.client.post(
-            '/users/signin',
-            data=json.dumps(self.new_password),
-            content_type='application/json'
-        )
+        self.signup_and_verify_user()
+
+        resp = self.signin_user()
         auth_token = resp.json['data']['auth_token']
         response = self.client.put(
             '/users/update-password',
@@ -179,10 +191,12 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_j_forgot_password(self):
+    def test_forgot_password(self):
         """
         test for  forgot password.
         """
+        self.signup_and_verify_user()
+
         response = self.client.post(
             '/users/forgot',
             data=json.dumps(self.user_email),
@@ -190,10 +204,12 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 202)
 
-    def test_k_forgot_password_with_invalid_email(self):
+    def test_forgot_password_with_invalid_email(self):
         """
         test forgot email with an invalid email
         """
+        self.signup_and_verify_user()
+
         response = self.client.post(
             '/users/forgot',
             data=json.dumps(self.invalid_user_email),
@@ -201,20 +217,21 @@ class TestUsers(TodosBaseTest):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_l_password_update_with_invalid_token(self):
+    def test_password_update_with_invalid_token(self):
         """
         test password update for a given user
         with an invalid token
         """
+        self.signup_and_verify_user()
+
         auth_token = self.invalid_token
+        print(auth_token)
+
         response = self.client.put(
             '/users/update-password',
-            data=json.dumps(self.new_password),
+            data=json.dumps(self.unqualified_password),
             headers={'auth_token': auth_token},
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 403)
 
-    def test_z_tearing_down(self):
-        db.session.remove()
-        db.drop_all()
